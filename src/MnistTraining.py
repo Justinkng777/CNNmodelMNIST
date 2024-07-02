@@ -18,6 +18,7 @@ from keras.api.layers import MaxPool2D
 from keras.api.layers import Dense
 from keras.api.layers import Flatten
 from keras.api.optimizers import SGD
+from sklearn.model_selection import KFold
 
 """
 #shows the first 9 data in the mnist set
@@ -97,3 +98,45 @@ def define_model():
         opt = SGD(learning_rate=.01, momentum=.9)
         model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
         return model
+
+"""
+To evaluate we use n-fold cross-validation in this case n = 5
+so five fold cross validation
+where each test set will be 20% of the training dataset.
+
+it will be shuffled and then split into the goups.
+n-fold cross validation means that it breaks the data set into a training and validation group
+where we split the data into n groups, and train the model on n-1 of the group, and validate on the last group
+we do this in a total of n times with the validation group being every group at least once
+
+in this tutorial we are using the base epochs of 10 training, and a 
+default patch size of 32 examples
+"""
+
+def evaluate_model(dataX, dataY, n_folds = 5):
+    #makes variables into a list
+    scores, histories = list(), list()
+
+    #prepares cross validation
+    kfold = KFold(n_folds, shuffle = True, random_state = 1)
+
+    #enumerate splits
+    for train_ix, test_ix in kfold.split(dataX):
+
+        #defining the model
+        model = define_model()
+
+        #where we select the rows for training and testing
+        trainX, trainY, testX, testY = dataX[train_ix], dataY[train_ix], dataX[test_ix], dataY[test_ix]
+
+        #where we fit model or train the model
+        #training data, trainX, validation data trainY
+        #returns a record of loss values and metric values during training, and then evaluation or accuracy
+        history = model.fit(trainX, trainY, epochs=10, batch_size=32, validation_data=(testX, testY), verbose=0)
+        _, acc = model.evaluate(testX, testY, verbose=0)
+
+        print('> %.3f' % (acc * 100.0))
+
+        scores.append(acc)
+        histories.append(history)
+    return scores, histories
