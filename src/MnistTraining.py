@@ -121,7 +121,7 @@ def evaluate_model(dataX, dataY, n_folds = 5):
     #prepares cross validation
     kfold = KFold(n_folds, shuffle = True, random_state = 1)
 
-    #enumerate splits
+    #enumerate splits for training and testing
     for train_ix, test_ix in kfold.split(dataX):
 
         #defining the model
@@ -181,3 +181,17 @@ def summarize_performance(scores):
     print('Accuracy: mean=%.3f std=%.3f, n=%d' % (mean(scores) * 100, std(scores) * 100, len(scores)))
     plt.boxplot(scores)
     plt.show()
+
+#to actually test and run the model we have a testing harness
+def run_test_harness():
+     trainX, trainY, testX, testY = load_dataset()
+
+     trainX, testX = prep_pixels(trainX, testX)
+
+     scores, histories = evaluate_model(trainX, trainY)
+
+     summarize_diagnostics(histories)
+
+     summarize_diagnostics(scores)
+
+run_test_harness()
