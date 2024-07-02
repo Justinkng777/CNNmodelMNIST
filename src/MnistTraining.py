@@ -18,6 +18,7 @@ from keras.api.layers import MaxPool2D
 from keras.api.layers import Dense
 from keras.api.layers import Flatten
 from keras.api.optimizers import SGD
+from numpy import mean, std
 from sklearn.model_selection import KFold
 
 """
@@ -134,9 +135,49 @@ def evaluate_model(dataX, dataY, n_folds = 5):
         #returns a record of loss values and metric values during training, and then evaluation or accuracy
         history = model.fit(trainX, trainY, epochs=10, batch_size=32, validation_data=(testX, testY), verbose=0)
         _, acc = model.evaluate(testX, testY, verbose=0)
+        """
+        training will train the model
+        validation will see how accurate the model is
+        holdout set or testing data is final estimate of performance
+        """
 
         print('> %.3f' % (acc * 100.0))
 
         scores.append(acc)
         histories.append(history)
     return scores, histories
+
+
+"""
+we will create a diagnostic line plot that shows model performance
+on the train and test set during each fold of k-fold cross validation.
+With these graphs we can have an idea of if the model is overfitting, underfitting
+or good fit for dataset
+
+Blue lines = model performance on training dataset
+orange lines= performance on holdout test dataset
+"""
+def summarize_diagnostics(histories):
+     for i in range(len(histories)):
+          #plot loss
+          plt.subplot(2, 1, 1)
+          plt.title('Cross Entropy Loss')
+          plt.plot(histories[i].history['loss'], color='blue', label='train')
+          plt.plot(histories[i].history['val_loss'], color='orange', label='test')
+
+          #plot accuracy
+          plt.subplot(2, 1, 2)
+          plt.title('Classification Accuracy')
+          plt.plot(histories[i].history['accuracy'], color='blue', label='train')
+          plt.plot(histories[i].history['val_accuracy'], color='orange', label='test')
+          plt.show()
+
+"""
+now classification accuracy scores in each fold being summarized
+by calc mean and standard deviation
+display distribution of scores by a box and whisker plot
+"""
+def summarize_performance(scores):
+    print('Accuracy: mean=%.3f std=%.3f, n=%d' % (mean(scores) * 100, std(scores) * 100, len(scores)))
+    plt.boxplot(scores)
+    plt.show()
