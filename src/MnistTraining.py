@@ -159,18 +159,18 @@ orange lines= performance on holdout test dataset
 """
 def summarize_diagnostics(histories):
      for i in range(len(histories)):
-          #plot loss
-          plt.subplot(2, 1, 1)
-          plt.title('Cross Entropy Loss')
-          plt.plot(histories[i].history['loss'], color='blue', label='train')
-          plt.plot(histories[i].history['val_loss'], color='orange', label='test')
+        #plot loss
+        plt.subplot(2, 1, 1)
+        plt.title('Cross Entropy Loss')
+        plt.plot(histories[i].history['loss'], color='blue', label='train')
+        plt.plot(histories[i].history['val_loss'], color='orange', label='test')
 
-          #plot accuracy
-          plt.subplot(2, 1, 2)
-          plt.title('Classification Accuracy')
-          plt.plot(histories[i].history['accuracy'], color='blue', label='train')
-          plt.plot(histories[i].history['val_accuracy'], color='orange', label='test')
-          plt.show()
+        #plot accuracy
+        plt.subplot(2, 1, 2)
+        plt.title('Classification Accuracy')
+        plt.plot(histories[i].history['accuracy'], color='blue', label='train')
+        plt.plot(histories[i].history['val_accuracy'], color='orange', label='test')
+        plt.show()
 
 """
 now classification accuracy scores in each fold being summarized
@@ -192,6 +192,6 @@ def run_test_harness():
 
      summarize_diagnostics(histories)
 
-     summarize_diagnostics(scores)
+     summarize_performance(scores)
 
 run_test_harness()
